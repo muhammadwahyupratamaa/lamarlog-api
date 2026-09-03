@@ -2,7 +2,7 @@ services:
   postgres:
     image: postgres:18-alpine
     ports:
-      - "${POSTGRES_PORT:-5434}:5432"
+      - "${POSTGRES_PORT:-5435}:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-applyflow}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-applyflow_dev_password}

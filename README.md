@@ -12,7 +12,7 @@ npm run db:migrate
 npm run dev
 ```
 
-`GET /api/health` confirms the API is running. PostgreSQL is exposed at `${POSTGRES_PORT:-5434}`.
+`GET /api/health` confirms the API is running. PostgreSQL is exposed at `${POSTGRES_PORT:-5435}`.
 
 ## Environment
 
