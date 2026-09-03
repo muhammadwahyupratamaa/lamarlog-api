@@ -10,3 +10,4 @@ const fields = {
 export const createApplicationSchema = z.object(fields);
 export const updateApplicationSchema = z.object(fields).partial().refine((value) => Object.keys(value).length, 'At least one field is required');
 export const listApplicationsSchema = z.object({ page: z.coerce.number().int().min(1).default(1), limit: z.coerce.number().int().min(1).max(100).default(20), q: z.string().trim().max(255).optional(), status: z.enum(STATUSES).optional(), followUp: z.enum(['today', 'overdue', 'upcoming']).optional() });
+export const updateStatusSchema = z.object({ status: z.enum(STATUSES), note: z.string().trim().max(5000).optional() });
