@@ -21,6 +21,11 @@
   "license": "UNLICENSED",
   "private": true,
   "type": "module",
+  "jest": {
+    "testEnvironment": "node",
+    "setupFiles": ["<rootDir>/tests/env.js"],
+    "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"]
+  },
   "bugs": {
     "url": "https://github.com/muhammadwahyupratamaa/applyflow-api/issues"
   },

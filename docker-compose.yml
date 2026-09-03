@@ -7,8 +7,10 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-applyflow}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-applyflow_dev_password}
       POSTGRES_DB: ${POSTGRES_DB:-applyflow}
+      POSTGRES_TEST_DB: ${POSTGRES_TEST_DB:-applyflow_test}
     volumes:
       - postgres_data:/var/lib/postgresql
+      - ./docker/init-test-db.sh:/docker-entrypoint-initdb.d/init-test-db.sh:ro
 
 volumes:
   postgres_data:
