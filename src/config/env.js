@@ -8,10 +8,13 @@ export function env(name) {
   return value;
 }
 
+const corsOrigin = process.env.CORS_ORIGIN?.split(',').map((origin) => origin.trim()).filter(Boolean);
+if (process.env.NODE_ENV === 'production' && !corsOrigin?.length) throw new Error('CORS_ORIGIN is required in production');
+
 export const config = {
   port: Number(process.env.PORT || 3000),
   databaseUrl: process.env.NODE_ENV === 'test' ? process.env.TEST_DATABASE_URL || process.env.DATABASE_URL : env('DATABASE_URL'),
   jwtSecret: env('JWT_SECRET'),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
-  corsOrigin: process.env.CORS_ORIGIN?.split(',').map((origin) => origin.trim()).filter(Boolean) || true,
+  corsOrigin: corsOrigin?.length ? corsOrigin : 'http://localhost:5173',
 };

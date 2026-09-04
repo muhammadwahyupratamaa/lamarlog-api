@@ -1,5 +1,6 @@
 import request from 'supertest';
 import app from '../src/app.js';
+import { errorHandler } from '../src/middlewares/error.js';
 
 const register = async (email = `user-${Date.now()}-${Math.random()}@example.com`) => {
   const response = await request(app).post('/api/auth/register').send({ name: 'Test User', email, password: 'password123', confirmPassword: 'password123' });
@@ -19,6 +20,13 @@ test('register, duplicate email, and login', async () => {
 });
 
 test('protected endpoints reject missing token', async () => expect((await request(app).get('/api/applications')).status).toBe(401));
+
+test('unexpected errors do not expose internal details', () => {
+  let status; let body;
+  const log = console.error; console.error = () => {};
+  try { errorHandler(new Error('database password leaked'), {}, { status(code) { status = code; return { json(value) { body = value; } }; } }); } finally { console.error = log; }
+  expect(status).toBe(500); expect(body).toEqual({ message: 'Internal server error' });
+});
 
 test('users cannot access another user application', async () => {
   const owner = await register('owner@example.com'); const other = await register('other@example.com'); const created = await application(owner.token);

@@ -6,11 +6,11 @@
   "scripts": {
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
-    "test": "NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --runInBand",
-    "test:watch": "NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch",
-    "db:migrate": "sequelize-cli db:migrate --url \"$DATABASE_URL\" --migrations-path src/migrations",
-    "db:migrate:undo": "sequelize-cli db:migrate:undo --url \"$DATABASE_URL\" --migrations-path src/migrations",
-    "db:migrate:status": "sequelize-cli db:migrate:status --url \"$DATABASE_URL\" --migrations-path src/migrations"
+    "test": "NODE_ENV=test TEST_DATABASE_URL=\"${TEST_DATABASE_URL:-postgres://applyflow:applyflow_dev_password@localhost:5435/applyflow_test}\" NODE_OPTIONS=--experimental-vm-modules jest --runInBand",
+    "test:watch": "NODE_ENV=test TEST_DATABASE_URL=\"${TEST_DATABASE_URL:-postgres://applyflow:applyflow_dev_password@localhost:5435/applyflow_test}\" NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "db:migrate": "sequelize-cli db:migrate --config sequelize.config.cjs --env \"${NODE_ENV:-development}\" --migrations-path src/migrations",
+    "db:migrate:undo": "sequelize-cli db:migrate:undo --config sequelize.config.cjs --env \"${NODE_ENV:-development}\" --migrations-path src/migrations",
+    "db:migrate:status": "sequelize-cli db:migrate:status --config sequelize.config.cjs --env \"${NODE_ENV:-development}\" --migrations-path src/migrations"
   },
   "repository": {
     "type": "git",

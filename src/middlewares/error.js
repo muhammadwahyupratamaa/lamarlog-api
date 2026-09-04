@@ -6,5 +6,5 @@ export function errorHandler(error, req, res, next) { // eslint-disable-line no-
   if (error.name === 'ZodError') return res.status(400).json({ error: { message: 'Validation failed', details: error.issues } });
   if (error.name === 'SequelizeUniqueConstraintError') return res.status(409).json({ error: { message: 'Resource already exists' } });
   console.error(error);
-  res.status(error.status || 500).json({ error: { message: error.message || 'Internal server error' } });
+  res.status(500).json({ message: 'Internal server error' });
 }
