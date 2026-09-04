@@ -46,13 +46,19 @@ npm test
 
 Tests undo and reapply migrations against `TEST_DATABASE_URL`; never point it at a development or production database.
 
-## Production deployment
+## Deploy to Vercel
 
-1. Provision PostgreSQL and set `DATABASE_URL`.
-2. Set `NODE_ENV=production`, `JWT_SECRET`, `CORS_ORIGIN`, and optionally `PORT` / `JWT_EXPIRES_IN`.
-3. Run `npm ci` and `npm run db:migrate`.
-4. Start the backend with `npm start`.
-5. Confirm `GET /api/health` returns `200`.
+Create a separate Vercel project from `applyflow-api`. Select the Express framework (or let Vercel auto-detect it), use Node.js 24, and set the build command to `npm run db:migrate`.
+
+Neon is the PostgreSQL provider: assign its connection URL to `DATABASE_URL`. Set these production variables in Vercel:
+
+- `DATABASE_URL`
+- `NODE_ENV=production`
+- `JWT_SECRET`
+- `CORS_ORIGIN`
+- `JWT_EXPIRES_IN` (optional)
+
+Do not set `TEST_DATABASE_URL` in Vercel production. Deploy after the database is available, then verify `/api/health`.
 
 ## API
 
