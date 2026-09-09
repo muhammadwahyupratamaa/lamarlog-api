@@ -35,3 +35,15 @@ test('Vercel entrypoint imports without opening a listener', async () => {
   expect(entrypoint.default).toBeInstanceOf(Function);
   expect(process._getActiveHandles().filter((handle) => handle.constructor?.name === 'Server')).toHaveLength(0);
 });
+
+test('startup logging reports a missing production variable without exposing values', () => {
+  const result = spawnSync(process.execPath, ['--input-type=module', '--eval', "import './src/index.js'"], {
+    cwd: process.cwd(),
+    env: { ...productionEnv, DATABASE_URL: '' },
+    encoding: 'utf8',
+  });
+  expect(result.status).not.toBe(0);
+  expect(result.stderr).toContain('ApplyFlow startup failed');
+  expect(result.stderr).toContain('DATABASE_URL is required');
+  expect(result.stderr).not.toContain(productionEnv.JWT_SECRET);
+});
