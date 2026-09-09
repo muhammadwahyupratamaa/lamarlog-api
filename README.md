@@ -48,17 +48,17 @@ Tests undo and reapply migrations against `TEST_DATABASE_URL`; never point it at
 
 ## Deploy to Vercel
 
-Create a separate Vercel project from `applyflow-api`. Select the Express framework (or let Vercel auto-detect it), use Node.js 24, and set the build command to `npm run db:migrate`.
+Create a separate Vercel project from `applyflow-api`. Select the Express framework (or let Vercel auto-detect it) and use Node.js 24. Leave the Build Command empty: `vercel.json` explicitly disables it.
 
 Neon is the PostgreSQL provider: assign its connection URL to `DATABASE_URL`. Set these production variables in Vercel:
 
 - `DATABASE_URL`
 - `NODE_ENV=production`
 - `JWT_SECRET`
-- `CORS_ORIGIN`
-- `JWT_EXPIRES_IN` (optional)
+- `CORS_ORIGIN=https://applyflow-lemon.vercel.app`
+- `JWT_EXPIRES_IN=1d`
 
-Do not set `TEST_DATABASE_URL` in Vercel production. Deploy after the database is available, then verify `/api/health`.
+Do not set `TEST_DATABASE_URL` in Vercel production. The Neon integration's pooled `DATABASE_URL` is suitable for the serverless API, but Neon recommends a direct (non-`-pooler`) `DATABASE_URL` for Sequelize migrations. Run `npm run db:migrate:production` once from a trusted machine or CI with that direct URL, then deploy and verify `GET /api/health`.
 
 ## API
 

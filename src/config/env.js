@@ -1,6 +1,7 @@
 import 'dotenv/config';
 
 const required = ['DATABASE_URL', 'JWT_SECRET'];
+const productionOrigin = 'https://applyflow-lemon.vercel.app';
 
 export function env(name) {
   const value = process.env[name];
@@ -8,13 +9,15 @@ export function env(name) {
   return value;
 }
 
-const corsOrigin = process.env.CORS_ORIGIN?.split(',').map((origin) => origin.trim()).filter(Boolean);
-if (process.env.NODE_ENV === 'production' && !corsOrigin?.length) throw new Error('CORS_ORIGIN is required in production');
+const corsOrigins = process.env.CORS_ORIGIN?.split(',').map((origin) => origin.trim()).filter(Boolean);
+const isProduction = process.env.NODE_ENV === 'production';
+if (isProduction && corsOrigins?.join(',') !== productionOrigin) throw new Error(`CORS_ORIGIN must be ${productionOrigin} in production`);
 
 export const config = {
   port: Number(process.env.PORT || 3000),
   databaseUrl: process.env.NODE_ENV === 'test' ? process.env.TEST_DATABASE_URL || process.env.DATABASE_URL : env('DATABASE_URL'),
   jwtSecret: env('JWT_SECRET'),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
-  corsOrigin: corsOrigin?.length ? corsOrigin : 'http://localhost:5173',
+  corsOrigin: isProduction ? productionOrigin : corsOrigins?.length ? corsOrigins : 'http://localhost:5173',
+  isProduction,
 };
