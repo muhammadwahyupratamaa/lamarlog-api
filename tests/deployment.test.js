@@ -18,8 +18,8 @@ test('production environment requires the frontend origin and uses DATABASE_URL'
   expect(spawnSync(process.execPath, ['--input-type=module', '--eval', "import './src/config/env.js'"], { cwd: process.cwd(), env: { ...productionEnv, CORS_ORIGIN: 'https://example.com' } }).status).not.toBe(0);
 });
 
-test('production database configuration enables verified SSL', () => {
-  expect(runProductionModule("import { sequelize } from './src/config/database.js'; console.log(JSON.stringify(sequelize.options.dialectOptions.ssl));")).toBe('{"require":true,"rejectUnauthorized":true}\n');
+test('production database configuration uses pg and verified SSL', () => {
+  expect(runProductionModule("import pg from 'pg'; import { sequelize } from './src/config/database.js'; console.log(JSON.stringify({ dialectModule: sequelize.options.dialectModule === pg, ssl: sequelize.options.dialectOptions.ssl }));")).toBe('{"dialectModule":true,"ssl":{"require":true,"rejectUnauthorized":true}}\n');
 });
 
 test('production CORS allows only the frontend origin', async () => {
