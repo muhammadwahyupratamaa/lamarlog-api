@@ -17,7 +17,7 @@ export const config = {
   port: Number(process.env.PORT || 3000),
   databaseUrl: process.env.NODE_ENV === 'test' ? process.env.TEST_DATABASE_URL || process.env.DATABASE_URL : env('DATABASE_URL'),
   jwtSecret: env('JWT_SECRET'),
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1d',
   corsOrigin: isProduction ? productionOrigin : corsOrigins?.length ? corsOrigins : 'http://localhost:5173',
   isProduction,
 };

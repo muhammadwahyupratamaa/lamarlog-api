@@ -31,7 +31,7 @@ Docker exposes PostgreSQL at `${POSTGRES_PORT:-5435}` and creates the dedicated 
 | `TEST_DATABASE_URL` | Separate PostgreSQL URL ending in `_test`; tests refuse other database names |
 | `JWT_SECRET` | Long random production secret |
 | `CORS_ORIGIN` | Comma-separated allowed frontend origins; required in production |
-| `JWT_EXPIRES_IN` | JWT lifetime (default `7d`) |
+| `JWT_EXPIRES_IN` | JWT lifetime (default `1d`) |
 
 ## Commands
 

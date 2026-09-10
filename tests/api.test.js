@@ -1,4 +1,5 @@
 import request from 'supertest';
+import jwt from 'jsonwebtoken';
 import app from '../src/app.js';
 import { errorHandler } from '../src/middlewares/error.js';
 
@@ -15,11 +16,23 @@ test('register, duplicate email, and login', async () => {
   const email = 'user@example.com'; const created = await register(email);
   expect(created.user).not.toHaveProperty('passwordHash'); expect(created.token).toBeTruthy();
   expect((await request(app).post('/api/auth/register').send({ name: 'Again', email, password: 'password123', confirmPassword: 'password123' })).status).toBe(409);
-  expect((await request(app).post('/api/auth/login').send({ email, password: 'password123' })).status).toBe(200);
+  const login = await request(app).post('/api/auth/login').send({ email, password: 'password123' });
+  expect(login.status).toBe(200);
+  for (const token of [created.token, login.body.data.token]) {
+    const { iat, exp } = jwt.decode(token);
+    expect(iat).toEqual(expect.any(Number)); expect(exp).toEqual(expect.any(Number));
+    expect(exp - iat).toBeCloseTo(86400, -2);
+  }
   expect((await request(app).post('/api/auth/login').send({ email, password: 'wrong' })).status).toBe(401);
 });
 
 test('protected endpoints reject missing token', async () => expect((await request(app).get('/api/applications')).status).toBe(401));
+
+test('protected endpoints reject expired token', async () => {
+  const { user } = await register();
+  const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET, { expiresIn: -1 });
+  expect((await request(app).get('/api/applications').set(auth(token))).status).toBe(401);
+});
 
 test('unexpected errors do not expose internal details', () => {
   let status; let body;
