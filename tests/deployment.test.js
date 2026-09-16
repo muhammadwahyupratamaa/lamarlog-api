@@ -1,26 +1,35 @@
 import request from 'supertest';
 import { execFileSync, spawnSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { createApp } from '../src/app.js';
 
-const productionOrigin = 'https://applyflow-lemon.vercel.app';
+const productionOrigin = 'https://lamarlog.vercel.app';
 const productionEnv = {
   ...process.env,
   NODE_ENV: 'production',
-  DATABASE_URL: 'postgres://user:password@db.example/applyflow',
+  DATABASE_URL: 'postgres://user:password@db.example/lamarlog',
   JWT_SECRET: 'test-secret',
   CORS_ORIGIN: productionOrigin,
 };
 
 const runProductionModule = (source, env = productionEnv) => execFileSync(process.execPath, ['--input-type=module', '--eval', source], { cwd: process.cwd(), env, encoding: 'utf8' });
 
-test('production environment requires the frontend origin and uses DATABASE_URL', () => {
-  expect(runProductionModule("import { config } from './src/config/env.js'; console.log(JSON.stringify({ databaseUrl: config.databaseUrl === process.env.DATABASE_URL, corsOrigin: config.corsOrigin }));")).toBe(`${JSON.stringify({ databaseUrl: true, corsOrigin: productionOrigin })}\n`);
-  expect(spawnSync(process.execPath, ['--input-type=module', '--eval', "import './src/config/env.js'"], { cwd: process.cwd(), env: { ...productionEnv, CORS_ORIGIN: 'https://example.com' } }).status).not.toBe(0);
+test('production environment requires one HTTPS frontend origin and normalizes its trailing slash', () => {
+  expect(runProductionModule("import { config } from './src/config/env.js'; console.log(JSON.stringify({ databaseUrl: config.databaseUrl === process.env.DATABASE_URL, corsOrigin: config.corsOrigin }));", { ...productionEnv, CORS_ORIGIN: `${productionOrigin}/` })).toBe(`${JSON.stringify({ databaseUrl: true, corsOrigin: productionOrigin })}\n`);
+  for (const origin of ['', '*', 'http://frontend.example.test', 'http://localhost:5173']) {
+    expect(spawnSync(process.execPath, ['--input-type=module', '--eval', "import './src/config/env.js'"], { cwd: process.cwd(), env: { ...productionEnv, CORS_ORIGIN: origin } }).status).not.toBe(0);
+  }
+});
+
+test('localhost is the non-production default only', () => {
+  expect(runProductionModule("import { config } from './src/config/env.js'; console.log(config.corsOrigin)", { ...productionEnv, NODE_ENV: 'test', CORS_ORIGIN: '' })).toBe('http://localhost:5173\n');
 });
 
 test('production database configuration uses pg and verified SSL', () => {
   expect(runProductionModule("import pg from 'pg'; import { sequelize } from './src/config/database.js'; console.log(JSON.stringify({ dialectModule: sequelize.options.dialectModule === pg, ssl: sequelize.options.dialectOptions.ssl }));")).toBe('{"dialectModule":true,"ssl":{"require":true,"rejectUnauthorized":true}}\n');
 });
+
+test('Vercel stays in sin1', () => expect(JSON.parse(readFileSync('vercel.json')).regions).toEqual(['sin1']));
 
 test('production CORS allows only the frontend origin', async () => {
   const app = createApp({ corsOrigin: productionOrigin });
@@ -43,7 +52,7 @@ test('startup logging reports a missing production variable without exposing val
     encoding: 'utf8',
   });
   expect(result.status).not.toBe(0);
-  expect(result.stderr).toContain('ApplyFlow startup failed');
+  expect(result.stderr).toContain('LamarLog API startup failed');
   expect(result.stderr).toContain('DATABASE_URL is required');
   expect(result.stderr).not.toContain(productionEnv.JWT_SECRET);
 });

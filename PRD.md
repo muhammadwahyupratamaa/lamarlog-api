@@ -1,8 +1,8 @@
-# ApplyFlow — Product Requirements Document
+# LamarLog — Product Requirements Document
 
 ## 1. Ringkasan Produk
 
-ApplyFlow adalah aplikasi web pribadi milik Muhammad Wahyu Pratama untuk mencatat, mengatur, dan memantau seluruh proses lamaran pekerjaan.
+LamarLog adalah aplikasi web pribadi milik Muhammad Wahyu Pratama untuk mencatat, mengatur, dan memantau seluruh proses lamaran pekerjaan.
 
 Aplikasi ini membantu pengguna mengetahui:
 
@@ -43,12 +43,12 @@ Project dipisahkan menjadi dua repositori private:
 
 | Repository | Fungsi | Visibility |
 |---|---|---|
-| `applyflow-web` | Frontend React | Private |
-| `applyflow-api` | Backend Express dan PostgreSQL integration | Private |
+| `lamarlog-web` | Frontend React | Private |
+| `lamarlog-api` | Backend Express dan PostgreSQL integration | Private |
 
-Kedua repository tidak dibuka untuk publik karena ApplyFlow memuat data job hunting dan informasi kontak pribadi pengguna.
+Kedua repository tidak dibuka untuk publik karena LamarLog memuat data job hunting dan informasi kontak pribadi pengguna.
 
-## 4.2 Frontend — `applyflow-web`
+## 4.2 Frontend — `lamarlog-web`
 
 - React.js
 - Vite
@@ -57,7 +57,7 @@ Kedua repository tidak dibuka untuk publik karena ApplyFlow memuat data job hunt
 - React Router
 - Fetch API
 
-## 4.3 Backend — `applyflow-api`
+## 4.3 Backend — `lamarlog-api`
 
 - Node.js
 - Express.js
